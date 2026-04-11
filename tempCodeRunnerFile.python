@@ -1,0 +1,27 @@
+import pandas as pd
+import numpy as np
+
+# Define the features your model expects (Raw versions)
+data = {
+    'Marital status': np.random.choice([1, 2, 3, 4], 500),
+    'Application order': np.random.randint(0, 10, 500),
+    'Course': np.random.randint(1, 9999, 500),
+    'Daytime/evening attendance': np.random.choice([0, 1], 500),
+    'Previous qualification': np.random.randint(1, 20, 500),
+    'Displaced': np.random.choice([0, 1], 500),
+    'Gender': np.random.choice([0, 1], 500),
+    'Scholarship holder': np.random.choice([0, 1], 500),
+    'Debtor': np.random.choice([0, 1], 500),
+    'Tuition fees up to date': np.random.choice([0, 1], 500),
+    'Age at enrollment': np.random.randint(18, 50, 500),
+    'Curricular units 1st sem (enrolled)': np.random.randint(0, 10, 500),
+    'Curricular units 1st sem (evaluations)': np.random.randint(0, 12, 500),
+    'Curricular units 1st sem (approved)': np.random.randint(0, 10, 500),
+    'Curricular units 1st sem (grade)': np.random.uniform(0, 20, 500),
+    'Curricular units 2nd sem (approved)': np.random.randint(0, 10, 500),
+    'Curricular units 2nd sem (grade)': np.random.uniform(0, 20, 500),
+}
+
+df_sample = pd.DataFrame(data)
+df_sample.to_csv('sample_students.csv', index=False)
+print("sample_students.csv created with 500 rows.")
