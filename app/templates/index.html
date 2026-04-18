@@ -286,11 +286,24 @@
             document.getElementById('probText').innerText = res.probability;
 
             // Handle UI changes based on risk
-            const isRisk = res.prediction === 'Dropout';
-            document.getElementById('iconBox').innerHTML = isRisk ? '<i class="fas fa-exclamation-triangle text-danger"></i>' : '<i class="fas fa-check-circle text-success"></i>';
-            document.getElementById('probBar').style.width = res.probability;
-            document.getElementById('probBar').className = `progress-bar ${isRisk ? 'bg-danger' : 'bg-success'}`;
+            const pred = res.prediction;
+            let icon, barColor;
+            if (pred === "Graduate") {
+                icon = '<i class="fas fa-check-circle text-success"></i>';
+                barColor = 'bg-success';
+            }
+            else if (pred === "Dropout") {
+                icon = '<i class="fas fa-exclamation-triangle text-danger"></i>';
+                barColor = 'bg-danger';
+            }
+            else {
+                icon = '<i class="fas fa-question-circle text-warning"></i>';
+                barColor = 'bg-warning';
+            }
 
+            document.getElementById('iconBox').innerHTML = icon;
+            document.getElementById('probBar').style.width = res.probability;
+            document.getElementById('probBar').className = `progress-bar ${barColor}`;
             // Handle Warnings (Mappings not found)
             if (res.warnings && res.warnings.length > 0) {
                 warningBox.innerHTML = `<div class="alert alert-warning small py-1 mt-2 text-start">

@@ -1,21 +1,26 @@
-# app.py
 from flask import Flask, render_template, request, jsonify
 from ml_engine import StudentPredictor
 import os
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# 2. Build the path to the model file inside root/model/
-# Adjust the filename extension (.pkl or .joblib) to match your actual file!
-MODEL_PATH = os.path.join(ROOT_DIR, 'models', 'XGBoost_v1_20260409_2342.joblib')
+# Use the PIPELINE filename you just saved (e.g., v1 with RobustScaler)
+MODEL_FILENAME = 'XGBoost_Pipeline_v1_20260416_1858.joblib' 
+MODEL_PATH = os.path.join(ROOT_DIR, 'models', MODEL_FILENAME)
 
 if not os.path.exists(MODEL_PATH):
-    print(f"CRITICAL ERROR: Model file not found at {MODEL_PATH}")
-    # You might want to exit here so you don't hunt ghosts later
-
-# 3. Initialize with the absolute path
-predictor = StudentPredictor(MODEL_PATH)
+    logger.error(f"FATAL: Model file not found at {MODEL_PATH}")
+    # In a real app, you might want to raise an exception here to prevent start-up
+    predictor = None
+else:
+    predictor = StudentPredictor(MODEL_PATH)
 
 @app.route('/')
 def index():
@@ -23,33 +28,51 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    if not predictor:
+        return jsonify({"error": "Model not initialized"}), 500
+    
     try:
-        data = request.json
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Empty request body"}), 400
+
+        # process_and_predict now uses your src/processing.py logic!
         label, prob, warnings = predictor.process_and_predict(data)
         
         return jsonify({
             "prediction": label,
             "probability": prob,
-            "warnings": warnings
+            "warnings": warnings,
+            "status": "success"
         })
+
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Prediction Error: {e}")
+        return jsonify({"error": "An internal error occurred during prediction"}), 500
 
 @app.route('/predict_batch', methods=['POST'])
 def predict_batch():
+    if not predictor:
+        return jsonify({"error": "Model not initialized"}), 500
+
     try:
         if 'file' not in request.files:
             return jsonify({"error": "No file uploaded"}), 400
         
-        results, csv_data = predictor.process_batch(request.files['file'])
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"error": "Selected file is empty"}), 400
+
+        results, csv_data = predictor.process_batch(file)
+        
         return jsonify({
             "results": results,
-            "csv_data": csv_data
+            "csv_data": csv_data,
+            "count": len(results)
         })
     except Exception as e:
-        print(f"BATCH ERROR: {e}")
+        logger.error(f"Batch Processing Error: {e}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
+    app.run(debug=True, port=5000)

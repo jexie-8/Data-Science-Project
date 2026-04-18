@@ -3,7 +3,6 @@
 # Default risk for any ID not explicitly found in these maps
 GLOBAL_MEAN_RISK = 0.35
 
-# Feature list exactly as expected by your XGBoost model
 MODEL_FEATURES = [
     "Marital status", "Application order", "Course", "Daytime/evening attendance",
     "Previous qualification", "Displaced", "Gender", "Scholarship holder",
@@ -17,8 +16,6 @@ MODEL_FEATURES = [
     "Application_mode_risk", "Age_at_Enrollment_Log"
 ]
 
-# Risk based on dropout rates per occupation (mapped from your HTML values)
-# Values represent probability weights (0.0 to 1.0)
 MOTHER_OCC_MAP = {
     1: 0.15,  # Student
     2: 0.05,  # Legislative/Senior Official (Low Risk)
@@ -33,13 +30,11 @@ MOTHER_OCC_MAP = {
     99: 0.35  # Other/Unknown
 }
 
-# Usually similar to Mother's but with slight variations in the dataset
 FATHER_OCC_MAP = {
     1: 0.18, 2: 0.06, 3: 0.05, 4: 0.09, 5: 0.14, 
     6: 0.24, 7: 0.30, 8: 0.27, 9: 0.42, 10: 0.11, 99: 0.35
 }
 
-# Crucial: Different entry modes have very different dropout risks
 APP_MODE_MAP = {
     1: 0.18,   # 1st phase - general (Low Risk)
     2: 0.25,   # Ordinance
@@ -52,7 +47,6 @@ APP_MODE_MAP = {
     39: 0.52   # Over 23 (Special phase)
 }
 
-# Course risk (Some STEM courses have higher attrition than Social Services)
 COURSE_MAP = {
     33: 0.40,   # Biofuel
     171: 0.25,  # Animation
