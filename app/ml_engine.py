@@ -32,9 +32,9 @@ class StudentPredictor:
         # Predict and return label + probability
         prob = self.pipeline.predict_proba(X_processed)[0][1]
         if prob >= 0.60:
-            label = "Graduate"
-        elif prob <= 0.40:
             label = "Dropout"
+        elif prob <= 0.40:
+            label = "Graduate"
         else:
             label = "Uncertain"
         
@@ -50,8 +50,8 @@ class StudentPredictor:
         
         # Attach to original raw data
         df_raw['Prediction'] = [
-            "Graduate" if p >= 0.60 else
-            "Dropout" if p <= 0.40 else
+            "Dropout" if p >= 0.60 else
+            "Graduate" if p <= 0.40 else
             "Uncertain"
             for p in probs
         ]

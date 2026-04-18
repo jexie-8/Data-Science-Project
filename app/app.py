@@ -11,13 +11,11 @@ app = Flask(__name__)
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Use the PIPELINE filename you just saved (e.g., v1 with RobustScaler)
-MODEL_FILENAME = 'XGBoost_Pipeline_v1_20260416_1858.joblib' 
+MODEL_FILENAME = 'XGBoost_Pipeline_v2_20260418_2041.joblib'
 MODEL_PATH = os.path.join(ROOT_DIR, 'models', MODEL_FILENAME)
 
 if not os.path.exists(MODEL_PATH):
     logger.error(f"FATAL: Model file not found at {MODEL_PATH}")
-    # In a real app, you might want to raise an exception here to prevent start-up
     predictor = None
 else:
     predictor = StudentPredictor(MODEL_PATH)
@@ -36,7 +34,6 @@ def predict():
         if not data:
             return jsonify({"error": "Empty request body"}), 400
 
-        # process_and_predict now uses your src/processing.py logic!
         label, prob, warnings = predictor.process_and_predict(data)
         
         return jsonify({

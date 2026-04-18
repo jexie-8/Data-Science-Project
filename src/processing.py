@@ -20,7 +20,6 @@ def clean_data(df, target_column):
    # 1. Make a copy of the original dataframe to avoid modifying it directly.
     clean_df = df.copy()
     
-     
     # 2. Handle missing values by filling numerical columns with their median & drop duplicates.
     numerical_cols = clean_df.select_dtypes(include=np.number).columns
     clean_df[numerical_cols] = clean_df[numerical_cols].fillna(clean_df[numerical_cols].median())
@@ -32,6 +31,13 @@ def clean_data(df, target_column):
             clean_df = clean_df.dropna(subset=[target_column])
     else:
         raise ValueError(f"Target column '{target_column}' not found in dataset.")
+    
+    # Also remove these students that were flagge dduirng data integrity checking in data cleaning,
+    # as they are graduates with 0 units approved or credited in the final year 
+    grad_conflict = clean_df[(clean_df['Target'] == 'Graduate') & (clean_df['Curricular units 2nd sem (approved)'] == 0) 
+                             & (clean_df['Curricular units 1st sem (approved)'] == 0) 
+                             & (clean_df['Curricular units 1st sem (credited)'] == 0)]
+    clean_df = clean_df.drop(grad_conflict.index)
 
     # 4. Cap outliers in the three key academic features to reduce their influence on the model.
     academic_cols = [
